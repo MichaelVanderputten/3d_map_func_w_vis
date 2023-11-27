@@ -17,7 +17,7 @@ white = (255,255,255)
 font = pygame.font.Font(None, 36)
 
 # initialize view variables
-views = ["3D", "2D-XY", "2D-ZY"]
+views = ["3D", "2D-XY", "2D-ZY", "2D-XZ"]
 current_view_index = 0
 
 # draw view button
@@ -62,24 +62,59 @@ def initialize_graph():
         screen.blit(x_label, (xx, xy))
         screen.blit(y_label, (yx, yy))
         screen.blit(z_label, (cpx, cpy))
+
+
     elif views[current_view_index] == "2D-XY":
+        cpx = window_size[1]/10
+        cpy = window_size[1]-(window_size[1]/10) # common point
+
+        xx = window_size[1]-(window_size[1]/10)
+        xy = window_size[1]-(window_size[1]/10)
+
+        yx = (window_size[1]/10)
+        yy = (window_size[1]/10) # end points
         # Draw X and Y axes
-        pygame.draw.line(screen, white, (window_size[1]/10, window_size[1]-(window_size[1]/10)), (window_size[1]-(window_size[1]/10), window_size[1]-(window_size[1]/10)), 2) # x
-        pygame.draw.line(screen, white, (window_size[1]/10, window_size[1]-(window_size[1]/10)), ((window_size[1]/10), (window_size[1]/10)), 2) # y 
+        pygame.draw.line(screen, white, (cpx, cpy), (xx, xy), 2) # x
+        pygame.draw.line(screen, white, (cpx, cpy), (yx, yy), 2) # y 
         # Label axes
         x_label = font.render("X-axis", True, white)
         y_label = font.render("Y-axis", True, white)
-        screen.blit(x_label, (window_size[0] - 50, window_size[1] // 2 - 30))
-        screen.blit(y_label, (window_size[0] // 2 + 10, 10))
+        screen.blit(x_label, (xx, xy))
+        screen.blit(y_label, (yx, yy))
     elif views[current_view_index] == "2D-ZY":
-        # Draw Z and Y axes
-        pygame.draw.line(screen, white, (window_size[1]/10, window_size[1]-(window_size[1]/10)), (window_size[1]-(window_size[1]/10), window_size[1]-(window_size[1]/10)), 2) # z
-        pygame.draw.line(screen, white, (window_size[1]/10, window_size[1]-(window_size[1]/10)), ((window_size[1]/10), (window_size[1]/10)), 2) # y 
+        cpx = window_size[1]/10
+        cpy = window_size[1]-(window_size[1]/10) # common point
+
+        zx = window_size[1]-(window_size[1]/10)
+        zy = window_size[1]-(window_size[1]/10)
+
+        yx = (window_size[1]/10)
+        yy = (window_size[1]/10) # end points
+        # Draw z and Y axes
+        pygame.draw.line(screen, white, (cpx, cpy), (zx, zy), 2) # z
+        pygame.draw.line(screen, white, (cpx, cpy), (yx, yy), 2) # y 
         # Label axes
-        y_label = font.render("Y-axis", True, white)
         z_label = font.render("Z-axis", True, white)
-        screen.blit(y_label, (window_size[0] // 2 + 10, 10))
-        screen.blit(z_label, (window_size[0] // 2 + 10, window_size[1] // 2 - 110))
+        y_label = font.render("Y-axis", True, white)
+        screen.blit(z_label, (zx, zy))
+        screen.blit(y_label, (yx, yy))
+    elif views[current_view_index] == "2D-XZ":
+        cpx = window_size[1]/10
+        cpy = window_size[1]-(window_size[1]/10) # common point
+
+        xx = window_size[1]-(window_size[1]/10)
+        xy = window_size[1]-(window_size[1]/10)
+
+        zx = (window_size[1]/10)
+        zy = (window_size[1]/10) # end points
+        # Draw x and z axes
+        pygame.draw.line(screen, white, (cpx, cpy), (xx, xy), 2) # x
+        pygame.draw.line(screen, white, (cpx, cpy), (zx, zy), 2) # z
+        # Label axes
+        x_label = font.render("X-axis", True, white)
+        z_label = font.render("Z-axis", True, white)
+        screen.blit(x_label, (xx, xy))
+        screen.blit(z_label, (zx, zy))
 
 
 # Main game loop
