@@ -93,6 +93,20 @@ points_3d = [
     (308,-150,120),
 ] # test points
 
+ori_points_3d = [
+    (-101,100,178),
+    (125,-234,156),
+    (203,200,-267),
+    (-10,-395,98),
+    (163,178,-13),
+    (115,-64,362),
+    (109,291,-168),
+    (-285,-32,232),
+    (87,278,-187),
+    (-38,108,-90),
+    (308,-150,120),
+] # test points
+
 # Draw 3D scene
 def draw_3d_scene():
     center = (0,0, 0)
@@ -141,13 +155,15 @@ while True:
                 rotation_start_time = pygame.time.get_ticks()
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  # Left mouse button released
-                elapsed_time = pygame.time.get_ticks() - rotation_start_time
-                if elapsed_time >= 1000:  # Check if the mouse was pressed for more than a second
                     rotate_active = False
-                else:
-                    rotate_active = False
-                    current_view_index = (current_view_index + 1) % len(views)
-                    print("Switched to", views[current_view_index])
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_f:
+                current_view_index = (current_view_index + 1) % len(views)
+                print("Switched to", views[current_view_index])
+            elif event.key == pygame.K_b:
+                current_view_index = (current_view_index - 1) % len(views)
+                print("Switched to", views[current_view_index])
+
 
     # Clear the screen
     screen.fill(black)
@@ -168,56 +184,45 @@ while True:
         draw_3d_scene()
 
     elif views[current_view_index] == "2D-XY":
-        cpx = window_size[1]/10
-        cpy = window_size[1]-(window_size[1]/10) # common point
-
-        xx = window_size[1]-(window_size[1]/10)
-        xy = window_size[1]-(window_size[1]/10)
-
-        yx = (window_size[1]/10)
-        yy = (window_size[1]/10) # end points
-        # Draw X and Y axes
-        pygame.draw.line(screen, white, (cpx, cpy), (xx, xy), 2) # x
-        pygame.draw.line(screen, white, (cpx, cpy), (yx, yy), 2) # y 
+        # Draw x and Y axes
+        pygame.draw.line(screen, white, (window_size[0]//2, window_size[1]//10), (window_size[0]//2, window_size[1]-(window_size[1]//10)), 2) # Y
+        pygame.draw.line(screen, white, (window_size[0]//10, window_size[1]//2), (window_size[0]-(window_size[0]//10), window_size[1]//2), 2) # X
         # Label axes
-        x_label = font.render("X-axis", True, white)
-        y_label = font.render("Y-axis", True, white)
-        screen.blit(x_label, (xx, xy))
-        screen.blit(y_label, (yx, yy))
+        z_label = font.render("Y-axis", True, white)
+        y_label = font.render("X-axis", True, white)
+        screen.blit(z_label, (window_size[0]//2, window_size[1]//10))
+        screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
+
+        #draw points using z and y
+        for point in ori_points_3d:
+            pygame.draw.circle(screen, white, (point[0]+400, point[1]+400), 5)
+
     elif views[current_view_index] == "2D-ZY":
-        cpx = window_size[1]/10
-        cpy = window_size[1]-(window_size[1]/10) # common point
-
-        zx = window_size[1]-(window_size[1]/10)
-        zy = window_size[1]-(window_size[1]/10)
-
-        yx = (window_size[1]/10)
-        yy = (window_size[1]/10) # end points
         # Draw z and Y axes
-        pygame.draw.line(screen, white, (cpx, cpy), (zx, zy), 2) # z
-        pygame.draw.line(screen, white, (cpx, cpy), (yx, yy), 2) # y 
+        pygame.draw.line(screen, white, (window_size[0]//2, window_size[1]//10), (window_size[0]//2, window_size[1]-(window_size[1]//10)), 2) # Y
+        pygame.draw.line(screen, white, (window_size[0]//10, window_size[1]//2), (window_size[0]-(window_size[0]//10), window_size[1]//2), 2) # Z
         # Label axes
-        z_label = font.render("Z-axis", True, white)
-        y_label = font.render("Y-axis", True, white)
-        screen.blit(z_label, (zx, zy))
-        screen.blit(y_label, (yx, yy))
+        z_label = font.render("Y-axis", True, white)
+        y_label = font.render("Z-axis", True, white)
+        screen.blit(z_label, (window_size[0]//2, window_size[1]//10))
+        screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
+
+        #draw points using z and y
+        for point in ori_points_3d:
+            pygame.draw.circle(screen, white, (point[2]+400, point[1]+400), 5)
     elif views[current_view_index] == "2D-XZ":
-        cpx = window_size[1]/10
-        cpy = window_size[1]-(window_size[1]/10) # common point
-
-        xx = window_size[1]-(window_size[1]/10)
-        xy = window_size[1]-(window_size[1]/10)
-
-        zx = (window_size[1]/10)
-        zy = (window_size[1]/10) # end points
         # Draw x and z axes
-        pygame.draw.line(screen, white, (cpx, cpy), (xx, xy), 2) # x
-        pygame.draw.line(screen, white, (cpx, cpy), (zx, zy), 2) # z
+        pygame.draw.line(screen, white, (window_size[0]//2, window_size[1]//10), (window_size[0]//2, window_size[1]-(window_size[1]//10)), 2) # z
+        pygame.draw.line(screen, white, (window_size[0]//10, window_size[1]//2), (window_size[0]-(window_size[0]//10), window_size[1]//2), 2) # x
         # Label axes
-        x_label = font.render("X-axis", True, white)
         z_label = font.render("Z-axis", True, white)
-        screen.blit(x_label, (xx, xy))
-        screen.blit(z_label, (zx, zy))
+        y_label = font.render("X-axis", True, white)
+        screen.blit(z_label, (window_size[0]//2, window_size[1]//10))
+        screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
+
+        #draw points using z and y
+        for point in ori_points_3d:
+            pygame.draw.circle(screen, white, (point[0]+400, point[2]+400), 5)
 
     # Update the display
     pygame.display.flip()
