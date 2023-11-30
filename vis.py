@@ -13,6 +13,9 @@ pygame.display.set_caption("Pygame 3D App")
 # Set up colors
 black = (0, 0, 0)
 white = (255, 255, 255)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
 
 # Set up fonts
 font = pygame.font.Font(None, 36)
@@ -42,9 +45,9 @@ def draw_current_view_text():
 # Rotate points in 3D
 def rotate_3d(x, y, z, center, angles):
     # Translate the points to the origin
-    translated_x = x - center[0]
-    translated_y = y - center[1]
-    translated_z = z - center[2]
+    translated_x = x
+    translated_y = y
+    translated_z = z
 
     # Rotate around the x-axis
     rotated_y = translated_y * math.cos(angles[0]) - translated_z * math.sin(angles[0])
@@ -66,27 +69,65 @@ def rotate_3d(x, y, z, center, angles):
     return rotated_x, rotated_y, rotated_z
 
 # Initialize 3D points
+axis_points_3d = [
+    (0, 100, 0),
+    (0, -100, 0),
+    (100, 0, 0),
+    (-100, 0, 0),
+    (0, 0, 100),
+    (0, 0, -100),
+    (0, 0, 0),
+] # axis points
+
 points_3d = [
-    (100, 100, 100),
-    (200, 100, 100),
-    (200, 200, 100),
-    (100, 200, 100),
-    (150, 150, 200),
-    (100, 150, 250),
-]  # test points
+    (-101,100,178),
+    (125,-234,156),
+    (203,200,-267),
+    (-10,-395,98),
+    (163,178,-13),
+    (115,-64,362),
+    (109,291,-168),
+    (-285,-32,232),
+    (87,278,-187),
+    (-38,108,-90),
+    (308,-150,120),
+] # test points
 
 # Draw 3D scene
 def draw_3d_scene():
-    # Draw the X, Y, and Z axes in the 3D view
-    for axis in [(1, 0, 0), (0, 1, 0), (0, 0, 1)]:
-        axis_start = rotate_3d(0, 0, 0, center=(window_size[0] // 2, window_size[1] // 2, 0), angles=(rotation_angle_x, rotation_angle_y, 0))
-        axis_end = rotate_3d(axis[0] * 150, axis[1] * 150, axis[2] * 150, center=(window_size[0] // 2, window_size[1] // 2, 0), angles=(rotation_angle_x, rotation_angle_y, 0))
-        pygame.draw.line(screen, white, axis_start[:2], axis_end[:2], 2)
+    center = (0,0, 0)
 
-    # Draw 3D points
+    # Draw the X, Y, and Z axes in the 3D view
+    fixed_axis_points_3d = {}
+    for point in axis_points_3d:
+        rotated_point = rotate_3d(*point, center, (rotation_angle_x, rotation_angle_y, 0))
+        screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
+        fixed_axis_points_3d[point] = screen_coordinates
+    #print(fixed_axis_points_3d)
+
+    for axis_key in fixed_axis_points_3d.keys():
+        axis_start = fixed_axis_points_3d[(0, 0, 0)]
+        axis_end = fixed_axis_points_3d[axis_key]
+        pygame.draw.line(screen, red, (axis_start[0] + center[0], axis_start[1] + center[1]), (axis_end[0] + center[0], axis_end[1] + center[1]), 2)
+        pygame.draw.circle(screen, green, fixed_axis_points_3d[axis_key], 2)
+
+
+    # Draw 3D points projected onto 2D plane based on the current view
     for point in points_3d:
-        rotated_point = rotate_3d(*point, center=(window_size[0] // 2, window_size[1] // 2, 0), angles=(rotation_angle_x, rotation_angle_y, 0))
-        pygame.draw.circle(screen, white, (int(rotated_point[0]), int(rotated_point[1])), 5)
+        rotated_point = rotate_3d(*point, center, (rotation_angle_x, rotation_angle_y, 0))
+
+        if views[current_view_index] == "2D-XY":
+            screen_coordinates = (int(rotated_point[0]), int(rotated_point[1]))
+        elif views[current_view_index] == "2D-ZY":
+            screen_coordinates = (int(rotated_point[2]), int(rotated_point[1]))
+        elif views[current_view_index] == "2D-XZ":
+            screen_coordinates = (int(rotated_point[0]), int(rotated_point[2]))
+        else:
+            screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
+
+        pygame.draw.circle(screen, white, screen_coordinates, 5)
+
+
 
 # Main game loop
 while True:
@@ -118,8 +159,8 @@ while True:
     # Rotate the points based on mouse movement
     if rotate_active:
         dx, dy = pygame.mouse.get_rel()
-        rotation_angle_x += dx * 0.01  # Horizontal rotation
-        rotation_angle_y += dy * 0.01  # Vertical rotation
+        rotation_angle_y += dx * -0.01  # Horizontal rotation
+        rotation_angle_x += dy * 0.01  # Vertical rotation
 
     # Draw the appropriate axes and points based on the current view
     if views[current_view_index] == "3D":
