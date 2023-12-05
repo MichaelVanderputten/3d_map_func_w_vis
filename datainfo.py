@@ -35,57 +35,30 @@ def find_min_value(arr, axis):
 
 def create_heatmap(point, step, axis):
     # Map values to RGB colors
-    if(axis == 2):
-        if(int(point[axis]*step < 0)):
-            colors_rgb = (
-            abs(int(point[axis]*step)),
-            255-abs(int(point[axis]*step)),
+    if axis == 2:
+        colors_rgb = (
+            max(0, min(255, abs(int(point[axis] * step)))),
+            max(0, min(255, abs(255 - abs(int(point[axis] * step))))),
             0,
-            )
-        else:
-            colors_rgb = (
-            255-abs(int(point[axis]*step)),
-            abs(int(point[axis]*step)),
+        )
+    elif axis == 1:
+        colors_rgb = (
+            max(0, min(255, abs(int(point[axis] * step)))),
             0,
-            )
-    elif(axis == 1):
-        if(int(point[axis]*step < 0)):
-            colors_rgb = (
-            abs(int(point[axis]*step)),
+            max(0, min(255, abs(255 - abs(int(point[axis] * step))))),
+        )
+    elif axis == 3:
+        colors_rgb = (
+            max(0, min(255, abs(int(point[axis] * step)))),
+            max(0, min(255, abs(255 - abs(int(point[axis] * step))))),
             0,
-            255-abs(int(point[axis]*step)),
-            )
-        else:
-            colors_rgb = (
-            255-abs(int(point[axis]*step)),
-            0,
-            abs(int(point[axis]*step)),
-            )
-    elif(axis == 3):
-        if(int(point[axis]*step < 0)):
-            colors_rgb = (
-            abs(int(point[axis]*step)),
-            255-abs(int(point[axis]*step)),
-            0,
-            )
-        else:
-            colors_rgb = (
-            255-abs(int(point[axis]*step)),
-            abs(int(point[axis]*step)),
-            0,
-            )
+        )
     else:
-        if(int(point[axis]*step < 0)):
-            colors_rgb = (
+        colors_rgb = (
             0,
-            abs(int(point[axis]*step)),
-            255-abs(int(point[axis]*step)),
-            )
-        else:
-            colors_rgb = (
-            0,
-            255-abs(int(point[axis]*step)),
-            abs(int(point[axis]*step)),
-            )
+            max(0, min(255, abs(int(point[axis] * step)))),
+            max(0, min(255, abs(255 - abs(int(point[axis] * step))))),
+        )
 
     return colors_rgb
+

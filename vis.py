@@ -33,6 +33,7 @@ rotation_start_time = 0
 views = ["3D", "2D-XY", "2D-ZY", "2D-XZ"]
 current_view_index = 0
 swap_from_3d = 0
+axis_color = False
 
 # Draw view button
 def draw_view_button():
@@ -105,7 +106,6 @@ def draw_3d_scene():
             screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
 
         c = create_heatmap(point, step_i, 3)
-        print(c)
         pygame.draw.circle(screen, c, screen_coordinates, 5)
 
 
@@ -132,6 +132,11 @@ while True:
             elif event.key == pygame.K_b:
                 current_view_index = (current_view_index - 1) % len(views)
                 print("Switched to", views[current_view_index])
+            elif event.key == pygame.K_s:
+                if(axis_color):
+                    axis_color = False
+                else:
+                    axis_color = True # color based on axis or data
 
 
     # Clear the screen
@@ -177,11 +182,14 @@ while True:
         screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
 
         #draw points using z and y
-        for point in ori_points_3d:
-            c = create_heatmap(point, step_z, 3)
-            print(point)
-            print(c)
-            pygame.draw.circle(screen, c, (point[0]+400, point[1]+400), 5)
+        if(axis_color):
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_z, 2)
+                pygame.draw.circle(screen, c, (point[0]+400, point[1]+400), 5)
+        else:
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_i, 3)
+                pygame.draw.circle(screen, c, (point[0]+400, point[1]+400), 5)
 
     elif views[current_view_index] == "2D-ZY":
         # Draw z and Y axes
@@ -194,11 +202,14 @@ while True:
         screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
 
         #draw points using z and y
-        for point in ori_points_3d:
-            c = create_heatmap(point, step_i, 0)
-            print(point)
-            print(c)
-            pygame.draw.circle(screen, c, (point[2]+400, point[1]+400), 5)
+        if(axis_color):
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_x, 0)
+                pygame.draw.circle(screen, c, (point[2]+400, point[1]+400), 5)
+        else:
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_i, 3)
+                pygame.draw.circle(screen, c, (point[2]+400, point[1]+400), 5)
     elif views[current_view_index] == "2D-XZ":
         # Draw x and z axes
         pygame.draw.line(screen, white, (window_size[0]//2, window_size[1]//10), (window_size[0]//2, window_size[1]-(window_size[1]//10)), 2) # z
@@ -210,11 +221,13 @@ while True:
         screen.blit(y_label, (window_size[0]//10, window_size[1]//2))
 
         #draw points using z and y
-        for point in ori_points_3d:
-            c = create_heatmap(point, step_z, 1)
-            print(point)
-            print(c)
-            pygame.draw.circle(screen, c, (point[0]+400, point[2]+400), 5)
-
+        if(axis_color):
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_y, 1)
+                pygame.draw.circle(screen, c, (point[0]+400, point[2]+400), 5)
+        else:
+            for point in ori_points_3d:
+                c = create_heatmap(point, step_i, 3)
+                pygame.draw.circle(screen, c, (point[0]+400, point[2]+400), 5)
     # Update the display
     pygame.display.flip()

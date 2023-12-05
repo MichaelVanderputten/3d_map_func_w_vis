@@ -49,8 +49,6 @@ min_x = find_min_value(ori_points_3d[:3], 0)
 max_i = find_max_value(ori_points_3d[:3], 3)
 min_i = find_min_value(ori_points_3d[:3], 3)
 step_i = 255/(max_i + abs(min_i))
-print(max_i, min_i)
-print(step_i)
 
 step_x = 255/(max_x + abs(min_x))
 step_y = 255/(max_y + abs(min_y))
