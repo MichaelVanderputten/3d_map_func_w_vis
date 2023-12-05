@@ -47,7 +47,7 @@ def draw_current_view_text():
     screen.blit(text, (10, window_size[1] - 50))
 
 # Rotate points in 3D
-def rotate_3d(x, y, z, center, angles):
+def rotate_3d(x, y, z, info, center, angles):
     # Translate the points to the origin
     translated_x = x
     translated_y = y
@@ -79,7 +79,7 @@ def draw_3d_scene():
     # Draw the X, Y, and Z axes in the 3D view
     fixed_axis_points_3d = {}
     for point in axis_points_3d:
-        rotated_point = rotate_3d(*point, center, (rotation_angle_x, rotation_angle_y, 0))
+        rotated_point = rotate_3d(point[0], point[1],point[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
         screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
         fixed_axis_points_3d[point] = screen_coordinates
     #print(fixed_axis_points_3d)
@@ -104,7 +104,8 @@ def draw_3d_scene():
         else:
             screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
 
-        c = create_heatmap(point, step_z, 0)
+        c = create_heatmap(point, step_i, 3)
+        print(c)
         pygame.draw.circle(screen, c, screen_coordinates, 5)
 
 
@@ -177,7 +178,9 @@ while True:
 
         #draw points using z and y
         for point in ori_points_3d:
-            c = create_heatmap(point, step_z, 2)
+            c = create_heatmap(point, step_z, 3)
+            print(point)
+            print(c)
             pygame.draw.circle(screen, c, (point[0]+400, point[1]+400), 5)
 
     elif views[current_view_index] == "2D-ZY":
@@ -192,7 +195,9 @@ while True:
 
         #draw points using z and y
         for point in ori_points_3d:
-            c = create_heatmap(point, step_z, 0)
+            c = create_heatmap(point, step_i, 0)
+            print(point)
+            print(c)
             pygame.draw.circle(screen, c, (point[2]+400, point[1]+400), 5)
     elif views[current_view_index] == "2D-XZ":
         # Draw x and z axes
@@ -207,6 +212,8 @@ while True:
         #draw points using z and y
         for point in ori_points_3d:
             c = create_heatmap(point, step_z, 1)
+            print(point)
+            print(c)
             pygame.draw.circle(screen, c, (point[0]+400, point[2]+400), 5)
 
     # Update the display

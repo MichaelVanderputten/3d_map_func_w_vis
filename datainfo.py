@@ -13,8 +13,8 @@ def sort_2d_array(arr, axis):
 
 def find_max_value(arr, axis):
     # Ensure a valid axis value is provided
-    if axis not in [0, 1, 2]:
-        raise ValueError("Invalid axis value. Please provide 0, 1, or 2.")
+    if axis not in [0, 1, 2, 3]:
+        raise ValueError("Invalid axis value. Please provide 0, 1, 2, or 3.")
 
     # Find the maximum value
     values = [item[axis] for item in arr]
@@ -24,8 +24,8 @@ def find_max_value(arr, axis):
 
 def find_min_value(arr, axis):
     # Ensure a valid axis value is provided
-    if axis not in [0, 1, 2]:
-        raise ValueError("Invalid axis value. Please provide 0, 1, or 2.")
+    if axis not in [0, 1, 2, 3]:
+        raise ValueError("Invalid axis value. Please provide 0, 1, or 2 or 3.")
 
     # Find the maximum value
     values = [item[axis] for item in arr]
@@ -36,43 +36,56 @@ def find_min_value(arr, axis):
 def create_heatmap(point, step, axis):
     # Map values to RGB colors
     if(axis == 2):
-        if(int(point[axis]/step < 0)):
+        if(int(point[axis]*step < 0)):
             colors_rgb = (
-            abs(int(point[axis]/step)),
-            255-abs(int(point[axis]/step)),
+            abs(int(point[axis]*step)),
+            255-abs(int(point[axis]*step)),
             0,
             )
         else:
             colors_rgb = (
-            255-abs(int(point[axis]/step)),
-            abs(int(point[axis]/step)),
+            255-abs(int(point[axis]*step)),
+            abs(int(point[axis]*step)),
             0,
             )
     elif(axis == 1):
-        if(int(point[axis]/step < 0)):
+        if(int(point[axis]*step < 0)):
             colors_rgb = (
-            abs(int(point[axis]/step)),
+            abs(int(point[axis]*step)),
             0,
-            255-abs(int(point[axis]/step)),
+            255-abs(int(point[axis]*step)),
             )
         else:
             colors_rgb = (
-            255-abs(int(point[axis]/step)),
+            255-abs(int(point[axis]*step)),
             0,
-            abs(int(point[axis]/step)),
+            abs(int(point[axis]*step)),
+            )
+    elif(axis == 3):
+        if(int(point[axis]*step < 0)):
+            colors_rgb = (
+            abs(int(point[axis]*step)),
+            255-abs(int(point[axis]*step)),
+            0,
+            )
+        else:
+            colors_rgb = (
+            255-abs(int(point[axis]*step)),
+            abs(int(point[axis]*step)),
+            0,
             )
     else:
-        if(int(point[axis]/step < 0)):
+        if(int(point[axis]*step < 0)):
             colors_rgb = (
             0,
-            abs(int(point[axis]/step)),
-            255-abs(int(point[axis]/step)),
+            abs(int(point[axis]*step)),
+            255-abs(int(point[axis]*step)),
             )
         else:
             colors_rgb = (
             0,
-            255-abs(int(point[axis]/step)),
-            abs(int(point[axis]/step)),
+            255-abs(int(point[axis]*step)),
+            abs(int(point[axis]*step)),
             )
 
     return colors_rgb
