@@ -3,6 +3,7 @@ import sys
 import math
 
 from datainfo import *
+from data import *
 
 # Initialize Pygame
 pygame.init()
@@ -31,6 +32,7 @@ rotation_start_time = 0
 # Initialize view variables
 views = ["3D", "2D-XY", "2D-ZY", "2D-XZ"]
 current_view_index = 0
+swap_from_3d = 0
 
 # Draw view button
 def draw_view_button():
@@ -70,57 +72,6 @@ def rotate_3d(x, y, z, center, angles):
 
     return rotated_x, rotated_y, rotated_z
 
-# Initialize 3D points
-axis_points_3d = [
-    (0, 100, 0),
-    (0, -100, 0),
-    (100, 0, 0),
-    (-100, 0, 0),
-    (0, 0, 100),
-    (0, 0, -100),
-    (0, 0, 0),
-] # axis points
-
-points_3d = [
-    (-101,100,178),
-    (125,-234,156),
-    (203,200,-267),
-    (-10,-395,98),
-    (163,178,-13),
-    (115,-64,362),
-    (109,291,-168),
-    (-285,-32,232),
-    (87,278,-187),
-    (-38,108,-90),
-    (308,-150,120),
-] # test points
-
-ori_points_3d = [
-    (-101,100,178),
-    (125,-234,156),
-    (203,200,-267),
-    (-10,-395,98),
-    (163,178,-13),
-    (115,-64,362),
-    (109,291,-168),
-    (-285,-32,232),
-    (87,278,-187),
-    (-38,108,-90),
-    (308,-150,120),
-] # test points
-
-max_z = find_max_value(ori_points_3d, 2)
-min_z = find_min_value(ori_points_3d, 2)
-max_y = find_max_value(ori_points_3d, 1)
-min_y = find_min_value(ori_points_3d, 1)
-max_x = find_max_value(ori_points_3d, 0)
-min_x = find_min_value(ori_points_3d, 0)
-
-step_x = (max_x + abs(min_x))/255
-step_y = (max_y + abs(min_y))/255
-step_z = (max_z + abs(min_z))/255 # global data info. change later
-
-
 # Draw 3D scene
 def draw_3d_scene():
     center = (0,0, 0)
@@ -153,7 +104,7 @@ def draw_3d_scene():
         else:
             screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
 
-        c = create_heatmap(point, step_z, 2)
+        c = create_heatmap(point, step_z, 0)
         pygame.draw.circle(screen, c, screen_coordinates, 5)
 
 
@@ -166,8 +117,10 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button clicked
+                if(current_view_index != 0):
+                    swap_from_3d = current_view_index
+                    current_view_index = 0 # set 3d
                 rotate_active = True
-                rotation_start_time = pygame.time.get_ticks()
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  # Left mouse button released
                     rotate_active = False
@@ -192,6 +145,20 @@ while True:
         dx, dy = pygame.mouse.get_rel()
         rotation_angle_y += dx * -0.01  # Horizontal rotation
         rotation_angle_x += dy * 0.01  # Vertical rotation
+
+        if(swap_from_3d == 1):
+            swap_from_3d = 0
+            rotation_angle_x = 0
+            rotation_angle_y = 0
+        elif(swap_from_3d == 2):
+            swap_from_3d = 0
+            rotation_angle_x = 0
+            rotation_angle_y = 1.575
+        elif(swap_from_3d == 3):
+            swap_from_3d = 0
+            rotation_angle_x = -1.575
+            rotation_angle_y = 0
+
 
     # Draw the appropriate axes and points based on the current view
     if views[current_view_index] == "3D":
