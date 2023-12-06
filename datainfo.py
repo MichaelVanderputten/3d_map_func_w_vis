@@ -62,3 +62,5 @@ def create_heatmap(point, step, axis):
 
     return colors_rgb
 
+def dis_scale(point, step):
+    pass
