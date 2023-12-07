@@ -5,6 +5,8 @@ import math
 from datainfo import *
 from data import *
 
+from graph import *
+
 # Initialize Pygame
 pygame.init()
 
@@ -47,6 +49,9 @@ def draw_current_view_text():
     text = font.render("Current View: " + views[current_view_index], True, white)
     screen.blit(text, (10, window_size[1] - 50))
 
+def calculate_distance(point1, point2):
+    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2 + (point1[2] - point2[2]) ** 2)
+
 # Rotate points in 3D
 def rotate_3d(x, y, z, info, center, angles):
     # Translate the points to the origin
@@ -75,22 +80,37 @@ def rotate_3d(x, y, z, info, center, angles):
 
 # Draw 3D scene
 def draw_3d_scene():
-    center = (0,0, 0)
+    center = (0, 0, 0)
+
+    # Calculate the distance from the viewer's perspective to the center of the scene
+    viewer_position = (0, 0, -3*abs_z) 
+    distance_to_center = calculate_distance(center, viewer_position)
 
     # Draw the X, Y, and Z axes in the 3D view
     fixed_axis_points_3d = {}
     for point in axis_points_3d:
-        rotated_point = rotate_3d(point[0], point[1],point[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
-        screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
-        fixed_axis_points_3d[point] = screen_coordinates
-    #print(fixed_axis_points_3d)
+        rotated_point = rotate_3d(point[0], point[1], point[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+        screen_coordinates = (int(rotated_point[0] + center[0]) + 400, int(rotated_point[1] + center[1] + 400))
+
+        # Calculate distance from the viewer to the current point
+        distance_to_point = calculate_distance(viewer_position, rotated_point)
+
+        # Scale factor based on distance (you can adjust this factor as needed)
+        scale_factor = distance_to_center / distance_to_point
+
+        # Apply the scale factor to the point size
+        point_size = int(5 * scale_factor)
+
+        fixed_axis_points_3d[point] = (screen_coordinates, point_size)
 
     for axis_key in fixed_axis_points_3d.keys():
-        axis_start = fixed_axis_points_3d[(0, 0, 0)]
-        axis_end = fixed_axis_points_3d[axis_key]
-        pygame.draw.line(screen, red, (axis_start[0] + center[0], axis_start[1] + center[1]), (axis_end[0] + center[0], axis_end[1] + center[1]), 2)
-        pygame.draw.circle(screen, green, fixed_axis_points_3d[axis_key], 2)
+        axis_start = fixed_axis_points_3d[(0, 0, 0)][0]
+        axis_end = fixed_axis_points_3d[axis_key][0]
+        point_size = fixed_axis_points_3d[axis_key][1]
 
+        pygame.draw.line(screen, red, (axis_start[0] + center[0], axis_start[1] + center[1]),
+                         (axis_end[0] + center[0], axis_end[1] + center[1]), 2)
+        pygame.draw.circle(screen, green, axis_end, 2)
 
     # Draw 3D points projected onto 2D plane based on the current view
     for point in points_3d:
@@ -103,10 +123,21 @@ def draw_3d_scene():
         elif views[current_view_index] == "2D-XZ":
             screen_coordinates = (int(rotated_point[0]), int(rotated_point[2]))
         else:
-            screen_coordinates = (int(rotated_point[0] + center[0])+400, int(rotated_point[1] + center[1]+400))
+            screen_coordinates = (
+            int(rotated_point[0] + center[0]) + 400, int(rotated_point[1] + center[1] + 400))
+
+        # Calculate distance from the viewer to the current point
+        distance_to_point = calculate_distance(viewer_position, rotated_point)
+
+        # Scale factor based on distance (you can adjust this factor as needed)
+        scale_factor = distance_to_center / distance_to_point
+
+        # Apply the scale factor to the point size
+        point_size = int(5 * scale_factor)
 
         c = create_heatmap(point, step_i, 3)
-        pygame.draw.circle(screen, c, screen_coordinates, 5)
+        pygame.draw.circle(screen, c, screen_coordinates, point_size)
+
 
 
 
@@ -135,8 +166,10 @@ while True:
             elif event.key == pygame.K_s:
                 if(axis_color):
                     axis_color = False
+                    print("info color")
                 else:
                     axis_color = True # color based on axis or data
+                    print("axis color")
 
 
     # Clear the screen
@@ -150,7 +183,7 @@ while True:
     if rotate_active:
         dx, dy = pygame.mouse.get_rel()
         rotation_angle_y += dx * -0.01  # Horizontal rotation
-        rotation_angle_x += dy * 0.01  # Vertical rotation
+        rotation_angle_x += dy * -0.01  # Vertical rotation
 
         if(swap_from_3d == 1):
             swap_from_3d = 0

@@ -1,4 +1,7 @@
 import math
+import numpy as np
+
+amount_graphs = 0
 
 def deg2(a,b,c, x):
     return a*x**2 + b*x + c

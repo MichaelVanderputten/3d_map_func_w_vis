@@ -53,3 +53,7 @@ step_i = 255/(max_i + abs(min_i))
 step_x = 255/(max_x + abs(min_x))
 step_y = 255/(max_y + abs(min_y))
 step_z = 255/(max_z + abs(min_z)) # global data info. change later
+
+abs_z = min_z
+if(max_z > min_z):
+    abs_z = max_z
