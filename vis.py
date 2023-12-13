@@ -81,26 +81,21 @@ def rotate_3d(x, y, z, info, center, angles):
     return rotated_x, rotated_y, rotated_z
 
 def draw_3d_graph():
-    print("drawing points")
     center = (0, 0, 0)
     distance_to_center = calculate_distance(center, viewer_position)
-    print(distance_to_center)
     for graph in graphs:
-        print(graph)
-        for point in graph:
-            print(point)
-            # Apply rotation to each 3D point
-            rotated_point = rotate_3d(point[0], point[1], point[2], center, (rotation_angle_x, rotation_angle_y, 0))
-            screen_coordinates = (int(rotated_point[0] + center[0]) + 400, int(rotated_point[1] + center[1] + 400))
-            print("rotated")
-            # Calculate distance to the viewer and apply scale factor
-            distance_to_point = calculate_distance(viewer_position, rotated_point)
-            scale_factor = distance_to_center / distance_to_point
-            point_size = int(5 * scale_factor)
-            print("ready to draw")
-            # Draw the rotated and scaled point
-            pygame.draw.circle(screen, blue, screen_coordinates, point_size)
-            print(screen_coordinates)
+        #print("graph: " , graph)
+        for row in graph:
+            for point in row:
+                # Apply rotation to each 3D point
+                rotated_point = rotate_3d(point[0], point[1], point[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+                screen_coordinates = (int(rotated_point[0] + center[0]) + 400, int(rotated_point[1] + center[1] + 400))
+                # Calculate distance to the viewer and apply scale factor
+                distance_to_point = calculate_distance(viewer_position, rotated_point)
+                scale_factor = distance_to_center / distance_to_point
+                point_size = int(5 * scale_factor)
+                # Draw the rotated and scaled point
+                pygame.draw.circle(screen, blue, screen_coordinates, point_size)
 
 
 
@@ -197,7 +192,8 @@ while True:
                 else:
                     axis_color = True # color based on axis or data
                     print("axis color")
-            elif event.key == pygame.K_PLUS:
+            elif event.key == pygame.K_n:
+                print("added new graph")
                 add_graph()
 
 
