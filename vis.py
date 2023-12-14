@@ -171,8 +171,12 @@ def draw_3d_scene():
 
     draw_3d_graph() # draw graphs
 
+a=0
+b=0
+c=0
+d=0
 
-
+addsub="add"
 
 # Main game loop
 while True:
@@ -190,13 +194,13 @@ while True:
             if event.button == 1:  # Left mouse button released
                     rotate_active = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_f:
+            if event.key == pygame.K_RIGHT:
                 current_view_index = (current_view_index + 1) % len(views)
                 print("Switched to", views[current_view_index])
-            elif event.key == pygame.K_b:
+            elif event.key == pygame.K_LEFT:
                 current_view_index = (current_view_index - 1) % len(views)
                 print("Switched to", views[current_view_index])
-            elif event.key == pygame.K_s:
+            elif event.key == pygame.K_h:
                 if(axis_color):
                     axis_color = False
                     print("info color")
@@ -207,7 +211,55 @@ while True:
                 print("added new graph")
                 add_graph("xy")
                 print(graphs)
-                update_graph(graphs[0], "deg2", "deg2", "xy", 5/max_val, 0/max_val, 0, 0)
+                update_graph(graphs[0], "deg2", "deg2", "xy", a/max_val, b/max_val, c, d)
+            elif event.key == pygame.K_MINUS:
+                print("sub mode")
+                addsub = "sub"
+            elif event.key == pygame.K_EQUALS:
+                print("add mode")
+                addsub = "add"
+            elif event.key == pygame.K_a and addsub == "add":
+                print("add 1")
+                a=a+0.1
+            elif event.key == pygame.K_a and addsub == "sub":
+                print("sub 1")
+                a=a-0.1
+
+            elif event.key == pygame.K_b and addsub == "add":
+                print("add 1")
+                b=b+10
+            elif event.key == pygame.K_b and addsub == "sub":
+                print("sub 1")
+                b=b-10
+
+            elif event.key == pygame.K_c and addsub == "add":
+                print("add 1")
+                c=c+10
+            elif event.key == pygame.K_c and addsub == "sub":
+                print("sub 1")
+                c=c-10
+
+            elif event.key == pygame.K_d and addsub == "add":
+                print("add 1")
+                d=d+10
+            elif event.key == pygame.K_d and addsub == "sub":
+                print("sub 1")
+                d=d-10
+
+            elif event.key == pygame.K_r:
+                print("reset")
+                addsub = "none"
+                current_view_index = 0
+                a=0
+                b=0
+                c=0
+                d=0
+                update_graph(graphs[0], "deg2", "deg2", "xy", a/max_val, b/max_val, c, d)
+
+        
+        elif event.type == pygame.KEYUP:
+            print("updating graph")
+            update_graph(graphs[0], "deg2", "deg2", "xy", a/max_val, b/max_val, c, d)
 
 
     # Clear the screen
