@@ -84,18 +84,29 @@ def draw_3d_graph():
     center = (0, 0, 0)
     distance_to_center = calculate_distance(center, viewer_position)
     for graph in graphs:
-        #print("graph: " , graph)
-        for row in graph:
-            for point in row:
+        for row in range(len(graph) - 1):  # subtract 1 to avoid index out of range
+            for col in range(len(graph[row]) - 1):  # subtract 1 to avoid index out of range
+                # Get points from current and next row
+                point1 = graph[row][col]
+                point2 = graph[row+1][col]
+                point3 = graph[row+1][col+1]
+                point4 = graph[row][col+1]
+
                 # Apply rotation to each 3D point
-                rotated_point = rotate_3d(point[0], point[1], point[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
-                screen_coordinates = (int(rotated_point[0] + center[0]) + 400, int(rotated_point[1] + center[1] + 400))
-                # Calculate distance to the viewer and apply scale factor
-                distance_to_point = calculate_distance(viewer_position, rotated_point)
-                scale_factor = distance_to_center / distance_to_point
-                point_size = int(5 * scale_factor)
-                # Draw the rotated and scaled point
-                pygame.draw.circle(screen, blue, screen_coordinates, point_size)
+                rotated_point1 = rotate_3d(point1[0], point1[1], point1[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+                rotated_point2 = rotate_3d(point2[0], point2[1], point2[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+                rotated_point3 = rotate_3d(point3[0], point3[1], point3[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+                rotated_point4 = rotate_3d(point4[0], point4[1], point4[2], -1, center, (rotation_angle_x, rotation_angle_y, 0))
+
+                # Calculate screen coordinates
+                screen_coordinates1 = (int(rotated_point1[0] + center[0]) + 400, int(rotated_point1[1] + center[1] + 400))
+                screen_coordinates2 = (int(rotated_point2[0] + center[0]) + 400, int(rotated_point2[1] + center[1] + 400))
+                screen_coordinates3 = (int(rotated_point3[0] + center[0]) + 400, int(rotated_point3[1] + center[1] + 400))
+                screen_coordinates4 = (int(rotated_point4[0] + center[0]) + 400, int(rotated_point4[1] + center[1] + 400))
+
+                # Draw the rotated and scaled points
+                pygame.draw.polygon(screen, blue, (screen_coordinates1, screen_coordinates2, screen_coordinates3, screen_coordinates4), 2)
+
 
 
 
@@ -194,7 +205,9 @@ while True:
                     print("axis color")
             elif event.key == pygame.K_n:
                 print("added new graph")
-                add_graph()
+                add_graph("xy")
+                print(graphs)
+                update_graph(graphs[0], "deg2", "deg2", "xy", 5/max_val, 0/max_val, 0, 0)
 
 
     # Clear the screen
