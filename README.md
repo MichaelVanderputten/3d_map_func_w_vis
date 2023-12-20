@@ -14,6 +14,8 @@ c - adjust c value
 d - adjust d value
 r - reset values to defult
 x - cycle between f(x) and f^-1(x) reciprical functions
-p - cycle between primary function options
-s - cycle between secondary function options
+p - select primary function
+s - select secondary function
 g - cycle between graphs
+up arrow - cycle between primary function options
+down arrow - cycle between secondary function options

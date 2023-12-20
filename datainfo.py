@@ -1,3 +1,5 @@
+import numpy
+
 def sort_2d_array(arr, axis):
     # Ensure a valid axis value is provided
     if axis not in [0, 1, 2]:
@@ -64,3 +66,7 @@ def create_heatmap(point, step, axis):
 
 def dis_scale(point, step):
     pass
+
+def swap_axis(data, comp1, comp2):
+    data[..., [comp1, comp2]] = data[..., [comp2, comp1]]
+    return data
