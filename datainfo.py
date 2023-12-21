@@ -64,9 +64,6 @@ def create_heatmap(point, step, axis):
 
     return colors_rgb
 
-def dis_scale(point, step):
-    pass
-
 def swap_axis(data, comp1, comp2):
     data[..., [comp1, comp2]] = data[..., [comp2, comp1]]
     return data

@@ -37,8 +37,8 @@ class APP:
 
         self.xy_yx = "yx"
         self.prim_sec = "prim"
-        self.primary = "deg3"
-        self.secondary = "lin" # selection vars
+        self.primary = "sinf"
+        self.secondary = "sinf" # selection vars
 
         self.ap=0
         self.bp=0
@@ -135,9 +135,6 @@ class APP:
                     # Draw the rotated and scaled points
                     pygame.draw.polygon(self.screen, self.blue, (screen_coordinates1, screen_coordinates2, screen_coordinates3, screen_coordinates4), 2)
 
-
-
-
     # Draw 3D scene
     def draw_3d_scene(self):
         center = (0, 0, 0)
@@ -215,6 +212,12 @@ class APP:
             self.cpmod = 1
             self.dpmod = 10
 
+        elif self.primary == "sinf":
+            self.apmod = 0.1
+            self.bpmod = 1
+            self.cpmod = 1
+            self.dpmod = 1
+
         if self.secondary == "lin":
             self.asecmod = 5
             self.bsmod = 10
@@ -229,6 +232,13 @@ class APP:
             self.bsmod = 0.1
             self.csmod = 1
             self.dpmod = 10
+
+        elif self.secondary == "sinf":
+            self.asecmod = 0.1
+            self.bsmod = 1
+            self.csmod = 1
+            self.dsmod = 1
+
 
 
     # Main game loop
@@ -264,9 +274,9 @@ class APP:
                             print("axis color")
                     elif event.key == pygame.K_n:
                         print("added new graph")
-                        add_graph(self.xy_yx)
+                        graph.add_graph(self.xy_yx)
                         print(graphs)
-                        update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/max_val, self.bp/max_val, -self.cp, self.dp, self.asec/max_val, self.bs/max_val, -self.cs, self.ds)
+                        graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
                     elif event.key == pygame.K_MINUS:
                         print("sub mode")
                         self.addsub = "sub"
@@ -341,7 +351,7 @@ class APP:
                         self.bs=0
                         self.cs=0
                         self.ds=0
-                        update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/max_val, self.bp/max_val, -self.cp, self.dp, self.asec/self.max_val, self.bs/self.max_val, -self.cs, self.ds)
+                        graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
 
                 
                 elif event.type == pygame.KEYUP:
@@ -352,7 +362,7 @@ class APP:
                     print(self.apmod,",",self.bpmod,",",self.cpmod,",",self.dpmod)
                     print(self.asec,",",self.bs,",",self.cs,",",self.ds)
                     print(self.asecmod,",",self.bsmod,",",self.csmod,",",self.dsmod)
-                    update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/max_val, self.bp/max_val, -self.cp, self.dp, self.asec/max_val, self.bs/max_val, -self.cs, self.ds)
+                    graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
 
 
             # Clear the screen
@@ -450,4 +460,5 @@ class APP:
 
 if __name__ == "__main__":
     app = APP()
+    graph = GRAPH()
     app.run()
