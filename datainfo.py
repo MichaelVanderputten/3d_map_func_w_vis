@@ -1,17 +1,6 @@
 import numpy
 
-def sort_2d_array(arr, axis):
-    # Ensure a valid axis value is provided
-    if axis not in [0, 1, 2]:
-        raise ValueError("Invalid axis value. Please provide 0, 1, or 2.")
 
-    # Define a lambda function as the key for sorting
-    key_function = lambda item: item[axis]
-
-    # Sort the array based on the specified axis
-    sorted_array = sorted(arr, key=key_function)
-
-    return sorted_array
 
 def find_max_value(arr, axis):
     # Ensure a valid axis value is provided

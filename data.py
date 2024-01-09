@@ -1,4 +1,5 @@
 from datainfo import *
+import numpy as np
 
 # Initialize 3D points
 axis_points_3d = [
@@ -24,6 +25,13 @@ points_3d = [
     (-38,108,-90, 1),
     (308,-150,120, 3),
 ] # test points
+
+point_relations_3d = [0] * len(points_3d)
+
+x_values_base_map = np.zeros((len(points_3d), 1, 4))
+
+higher = points_3d
+lower = points_3d # higher and lower points
 
 ori_points_3d = points_3d # save unrotated
 

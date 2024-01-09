@@ -8,8 +8,8 @@ graphs = []
 
 class GRAPH:
     def __init__(self):
-        self.dims = 100
-        self.min_val = -300 # change later
+        self.dims = 50
+        self.min_val = -600 # change later
         self.max_val = abs(self.min_val)
 
         self.base_map_xy = np.zeros((self.dims, self.dims, 3))
@@ -78,6 +78,30 @@ class GRAPH:
                     for col in range(len(graph[row])):
                         point = graph[row][col]
                         point[1] += sinf(asec*100, bs*100, point[2], cs*10, ds*10)
+
+            if primtype == "cosf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[1] = cosf(ap*100, bp*100, point[0], cp*10, dp*10)
+
+            if sectype == "cosf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[1] += cosf(asec*100, bs*100, point[2], cs*10, ds*10)
+
+            if primtype == "tanf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[1] = tanf(ap*100, bp*100, point[0], cp*10, dp*10)
+
+            if sectype == "tanf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[1] += tanf(asec*100, bs*100, point[2], cs*10, ds*10)
 
 
         elif axis == "yx":
@@ -148,4 +172,16 @@ def sinf(a,b,x,c,d):
     return (a*math.sin(b*(x*math.pi-c)))*100 + d
 
 def cosf(a,b,x,c,d):
-    return a*math.cos(b*(x-c)) + d
+    return (a*math.cos(b*(x*math.pi-c)))*100 + d
+
+def tanf(a,b,x,c,d):
+    return (a*math.tan(b*(x*math.pi-c)))*100 + d
+
+def asinf(a,b,x,c,d):
+    return (a*math.asin(b*(x*math.pi-c)))*100 + d
+
+def acosf(a,b,x,c,d):
+    return (a*math.acos(b*(x*math.pi-c)))*100 + d
+
+def atanf(a,b,x,c,d):
+    return (a*math.atan(b*(x*math.pi-c)))*100 + d

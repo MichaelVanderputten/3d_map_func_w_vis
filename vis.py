@@ -34,11 +34,16 @@ class APP:
         self.rotation_start_time = 0
 
         self.viewer_position = (0, 0, -3*abs_z)
+        
+        self.graphprim = ["lin", "deg2", "deg3", "sinf", "cosf", "tanf"]
+        self.graphprim_index = 0
+        self.graphsec = ["lin", "deg2", "deg3", "sinf", "cosf", "tanf"]
+        self.graphsec_index = 0
 
         self.xy_yx = "yx"
         self.prim_sec = "prim"
-        self.primary = "sinf"
-        self.secondary = "sinf" # selection vars
+        self.primary = self.graphprim[self.graphprim_index]
+        self.secondary = self.graphsec[self.graphsec_index]
 
         self.ap=0
         self.bp=0
@@ -198,7 +203,7 @@ class APP:
 
     def adjust_mods(self):
         if self.primary == "lin":
-            self.apmod = 5
+            self.apmod = 1
             self.bpmod = 10
 
         elif self.primary == "deg2":
@@ -207,9 +212,9 @@ class APP:
             self.cpmod = 10
         
         elif self.primary == "deg3":
-            self.apmod = 0.01
+            self.apmod = 0.001
             self.bpmod = 0.1
-            self.cpmod = 1
+            self.cpmod = 0.1
             self.dpmod = 10
 
         elif self.primary == "sinf":
@@ -217,10 +222,22 @@ class APP:
             self.bpmod = 1
             self.cpmod = 1
             self.dpmod = 1
+        
+        elif self.primary == "cosf":
+            self.apmod = 0.1
+            self.bpmod = 1
+            self.cpmod = 1
+            self.dpmod = 1
+        
+        elif self.primary == "tanf":
+            self.apmod = 0.1
+            self.bpmod = 1
+            self.cpmod = 1
+            self.dpmod = 1
 
         if self.secondary == "lin":
-            self.asecmod = 5
-            self.bsmod = 10
+            self.asecmod = 1
+            self.bsmod = 50
 
         elif self.secondary == "deg2":
             self.asecmod = 0.1
@@ -238,6 +255,47 @@ class APP:
             self.bsmod = 1
             self.csmod = 1
             self.dsmod = 1
+
+        elif self.secondary == "cosf":
+            self.asecmod = 0.1
+            self.bsmod = 1
+            self.csmod = 1
+            self.dsmod = 1
+
+        elif self.secondary == "tanf":
+            self.asecmod = 0.1
+            self.bsmod = 1
+            self.csmod = 1
+            self.dsmod = 1
+
+    def populate_x(self):
+        for i, point in enumerate(points_3d):
+            x_values_base_map[i] = np.array([[point[0], 0, 0, 0]])
+
+    def higher_lower(self):
+        #print("update graph", x_values_base_map, self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
+        graph.update_graph(x_values_base_map, self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
+        if self.primary == "deg2" and self.xy_yx == "yx":
+            for point in points_3d:
+                print("\n ori: ", point)
+                try:
+                    point_top = (point[0], 3.15*(-(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val), point[2], point[3])
+                    print("top point: ", point_top)
+                    rotated_point = self.rotate_3d(*point_top, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                    screen_coordinates = (int(rotated_point[0]) + 400, int(rotated_point[1] + 400))
+                    pygame.draw.circle(self.screen, (255,0,255), screen_coordinates, 5)
+                except Exception as e:
+                    print("top e: ", e)
+                    point_top = point
+                try:
+                    point_bottom = (point[0], 3.15*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val), point[2], point[3])
+                    print("bottom point: ", point_bottom)
+                    rotated_point = self.rotate_3d(*point_bottom, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                    screen_coordinates = (int(rotated_point[0]) + 400, int(rotated_point[1] + 400))
+                    pygame.draw.circle(self.screen, (0,255,255), screen_coordinates, 5)
+                except Exception as e:
+                    print("bottom e: ", e)
+                    point_bottom = point
 
 
 
@@ -266,16 +324,16 @@ class APP:
                         self.current_view_index = (self.current_view_index - 1) % len(self.views)
                         print("Switched to", self.views[self.current_view_index])
                     elif event.key == pygame.K_h:
-                        if(axis_color):
-                            axis_color = False
+                        if(self.axis_color):
+                            self.axis_color = False
                             print("info color")
                         else:
-                            axis_color = True # color based on axis or data
+                            self.axis_color = True # color based on axis or data
                             print("axis color")
                     elif event.key == pygame.K_n:
                         print("added new graph")
                         graph.add_graph(self.xy_yx)
-                        print(graphs)
+                        #print("working update graph", graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
                         graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
                     elif event.key == pygame.K_MINUS:
                         print("sub mode")
@@ -297,52 +355,62 @@ class APP:
 
                     elif event.key == pygame.K_a and self.addsub == "add":
                         if self.prim_sec == "prim":
-                            self.ap = self.ap+self.apmod
+                            self.ap = self.ap+1
                         else:
-                            self.asec = self.asec+self.asecmod
+                            self.asec = self.asec+1
                     elif event.key == pygame.K_a and self.addsub == "sub":
                         if self.prim_sec == "prim":
-                            self.ap = self.ap-self.apmod
+                            self.ap = self.ap-1
                         else:
-                            self.asec = self.asec-self.asecmod # adjust a value based on mods
+                            self.asec = self.asec-1 # adjust a value based on mods
 
                     elif event.key == pygame.K_b and self.addsub == "add":
                         if self.prim_sec == "prim":
-                            self.bp = self.bp+self.bpmod
+                            self.bp = self.bp+1
                         else:
-                            self.bs = self.bs+self.bsmod
+                            self.bs = self.bs+1
                     elif event.key == pygame.K_b and self.addsub == "sub":
                         if self.prim_sec == "prim":
-                            self.bp = self.bp-self.bpmod
+                            self.bp = self.bp-1
                         else:
-                            self.bs = self.bs-self.bsmod # adjust b value based on mods
+                            self.bs = self.bs-1 # adjust b value based on mods
 
                     elif event.key == pygame.K_c and self.addsub == "add":
                         if self.prim_sec == "prim":
-                            self.cp = self.cp+self.cpmod
+                            self.cp = self.cp+1
                         else:
-                            self.cs = self.cs+self.csmod
+                            self.cs = self.cs+1
                     elif event.key == pygame.K_c and self.addsub == "sub":
                         if self.prim_sec == "prim":
-                            self.cp = self.cp-self.cpmod
+                            self.cp = self.cp-1
                         else:
-                            self.cs = self.cs-self.csmod # adjust c value based on mods
+                            self.cs = self.cs-1 # adjust c value based on mods
 
                     elif event.key == pygame.K_d and self.addsub == "add":
                         if self.prim_sec == "prim":
-                            self.dp = self.dp+self.dpmod
+                            self.dp = self.dp+1
                         else:
-                            self.ds = self.ds+self.dsmod
+                            self.ds = self.ds+1
                     elif event.key == pygame.K_d and self.addsub == "sub":
                         if self.prim_sec == "prim":
-                            self.dp = self.dp-self.dpmod
+                            self.dp = self.dp-1
                         else:
-                            self.ds = self.ds-self.dsmod # adjust d value based on mods
+                            self.ds = self.ds-1 # adjust d value based on mods
+                    elif event.key == pygame.K_g and self.prim_sec == "prim":
+                        self.graphprim_index = (self.graphprim_index + 1) % len(self.graphprim)
+                        self.primary = self.graphprim[self.graphprim_index]
+                        print("Switched to", self.graphprim[self.graphprim_index])
+                    elif event.key == pygame.K_g and self.prim_sec == "sec":
+                        self.graphsec_index = (self.graphsec_index + 1) % len(self.graphsec)
+                        self.secondary = self.graphsec[self.graphsec_index]
+                        print("Switched to", self.graphsec[self.graphsec_index])
 
                     elif event.key == pygame.K_r:
                         print("reset")
                         self.addsub = "none"
                         self.current_view_index = 0
+                        self.graphsec_index = 0
+                        self.graphprim_index = 0
                         self.ap=0
                         self.bp=0
                         self.cp=0
@@ -351,8 +419,20 @@ class APP:
                         self.bs=0
                         self.cs=0
                         self.ds=0
-                        graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
-
+                        graph.update_graph(
+                            graphs[0], 
+                            self.primary, 
+                            self.secondary, 
+                            self.xy_yx, 
+                            self.ap/graph.max_val*self.apmod, 
+                            self.bp/graph.max_val*self.bpmod, 
+                            -self.cp*self.cpmod, 
+                            self.dp*self.dpmod, 
+                            self.asec/graph.max_val*self.asecmod,
+                            self.bs/graph.max_val*self.bsmod, 
+                            -self.cs*self.csmod, 
+                            self.ds*self.dsmod
+                        )
                 
                 elif event.type == pygame.KEYUP:
                     print("updating graph")
@@ -362,7 +442,23 @@ class APP:
                     print(self.apmod,",",self.bpmod,",",self.cpmod,",",self.dpmod)
                     print(self.asec,",",self.bs,",",self.cs,",",self.ds)
                     print(self.asecmod,",",self.bsmod,",",self.csmod,",",self.dsmod)
-                    graph.update_graph(graphs[0], self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
+                    try:
+                        graph.update_graph(
+                            graphs[0], 
+                            self.primary, 
+                            self.secondary, 
+                            self.xy_yx, 
+                            self.ap/graph.max_val*self.apmod, 
+                            self.bp/graph.max_val*self.bpmod, 
+                            -self.cp*self.cpmod, 
+                            self.dp*self.dpmod, 
+                            self.asec/graph.max_val*self.asecmod, 
+                            self.bs/graph.max_val*self.bsmod, 
+                            -self.cs*self.csmod, 
+                            self.ds*self.dsmod
+                            )
+                    except:
+                        pass
 
 
             # Clear the screen
@@ -371,6 +467,11 @@ class APP:
             # Draw the view button & text
             self.draw_view_button()
             self.draw_current_view_text()
+
+            # Check if point is above graph
+            if graphs:
+                self.populate_x()
+                self.higher_lower()
 
             # Rotate the points based on mouse movement
             if self.rotate_active:
