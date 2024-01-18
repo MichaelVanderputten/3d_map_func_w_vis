@@ -155,13 +155,13 @@ class GRAPH:
 
     def graph_sec(self, point, sectype, asec, bs, cs ,ds):
         if sectype == "deg2":
-            return(point[1] + deg2(asec, bs, cs, point[2]))
+            return(point[0] + deg2(asec, bs, cs, point[2]))
         if sectype == "deg3":
-            return(point[1] + deg3(asec, bs, cs, ds, point[2]))
+            return(point[0] + deg3(asec, bs, cs, ds, point[2]))
         if sectype == "lin":
-            return(point[1] + lin(asec*10, bs*10, point[2]))
+            return(point[0] + lin(asec*10, bs*10, point[2]))
         if sectype == "sinf":
-            return(point[1] + sinf(asec*10, bs*10, point[2], cs*10, ds*10))
+            return(point[0] + sinf(asec*10, bs*10, point[2], cs*10, ds*10))
 
     def add_graph(self, axis):
         if axis == "yx":
