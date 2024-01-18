@@ -44,6 +44,17 @@ def create_heatmap(point, step, axis):
             max(0, min(255, abs(255 - abs(int(point[axis] * step))))),
             0,
         )
+    elif axis == 4:
+        if step == -1:
+            colors_rgb = (255,0,0)
+        elif step == 0:
+            colors_rgb = (255,255,255)
+        elif step == 1:
+            colors_rgb = (128,0,128)
+        elif step == 2:
+            colors_rgb = (255,0,180)
+        else:
+            colors_rgb = (255,120,255)
     else:
         colors_rgb = (
             0,

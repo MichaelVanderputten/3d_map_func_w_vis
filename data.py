@@ -13,7 +13,6 @@ axis_points_3d = [
 ] # axis points
 
 points_3d = [
-    (-101,100,178, 1),
     (125,-234,156, 2),
     (203,200,-267, 3),
     (-10,-395,98, 1),
@@ -44,11 +43,25 @@ min_x = find_min_value(ori_points_3d[:3], 0)
 
 max_i = find_max_value(ori_points_3d[:3], 3)
 min_i = find_min_value(ori_points_3d[:3], 3)
-step_i = 255/(max_i + abs(min_i))
+try:
+    step_i = 255/(max_i + abs(min_i))
+except:
+    step_i = 255
 
-step_x = 255/(max_x + abs(min_x))
-step_y = 255/(max_y + abs(min_y))
-step_z = 255/(max_z + abs(min_z)) # global data info. change later
+try:
+    step_x = 255/(max_x + abs(min_x))
+except:
+    stpe_x = 255
+
+try:
+    step_y = 255/(max_y + abs(min_y))
+except:
+    step_y = 255
+
+try:
+    step_z = 255/(max_z + abs(min_z))
+except:
+    step_z = 255 # global data info. change later
 
 abs_z = min_z
 if(max_z > min_z):

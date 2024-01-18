@@ -174,7 +174,7 @@ class APP:
             pygame.draw.circle(self.screen, self.green, axis_end, 2)
 
         # Draw 3D points projected onto 2D plane based on the current view
-        for point in points_3d:
+        for i, point in enumerate(points_3d):
             rotated_point = self.rotate_3d(*point, center, (self.rotation_angle_x, self.rotation_angle_y, 0))
 
             if self.views[self.current_view_index] == "2D-XY":
@@ -196,7 +196,11 @@ class APP:
             # Apply the scale factor to the point size
             point_size = int(5 * scale_factor)
 
-            c = create_heatmap(point, step_i, 3)
+            if self.axis_color:
+                c = create_heatmap(point, step_i, 3)
+            else:
+                c = create_heatmap(point, point_relations_3d[i], 4)
+
             pygame.draw.circle(self.screen, c, screen_coordinates, point_size)
 
         self.draw_3d_graph() # draw graphs
@@ -273,30 +277,40 @@ class APP:
             x_values_base_map[i] = np.array([[point[0], 0, 0, 0]])
 
     def higher_lower(self):
-        #print("update graph", x_values_base_map, self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
-        graph.update_graph(x_values_base_map, self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
+        #graph.update_graph(x_values_base_map, self.primary, self.secondary, self.xy_yx, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds)
         if self.primary == "deg2" and self.xy_yx == "yx":
-            for point in points_3d:
-                print("\n ori: ", point)
+            for i, point in enumerate(points_3d):
                 try:
-                    point_top = (point[0], 3.15*(-(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val), point[2], point[3])
-                    print("top point: ", point_top)
-                    rotated_point = self.rotate_3d(*point_top, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
-                    screen_coordinates = (int(rotated_point[0]) + 400, int(rotated_point[1] + 400))
-                    pygame.draw.circle(self.screen, (255,0,255), screen_coordinates, 5)
-                except Exception as e:
-                    print("top e: ", e)
-                    point_top = point
-                try:
-                    point_bottom = (point[0], 3.15*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val), point[2], point[3])
-                    print("bottom point: ", point_bottom)
-                    rotated_point = self.rotate_3d(*point_bottom, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
-                    screen_coordinates = (int(rotated_point[0]) + 400, int(rotated_point[1] + 400))
-                    pygame.draw.circle(self.screen, (0,255,255), screen_coordinates, 5)
-                except Exception as e:
-                    print("bottom e: ", e)
-                    point_bottom = point
+                    initial_y = math.pi*(-(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val)
+                    point_top = (point[0], graph.graph_sec((point[0], initial_y, point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), point[2], point[3])
+                    point_bottom = (point[0], graph.graph_sec((point[0], math.pi*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val), point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), point[2], point[3])
 
+                    if (point[1] > point_bottom[1]):
+                        # under bottom
+                        point_relations_3d[i] = 1
+                    elif (point[1] < point_top[1]):
+                        # above top
+                        point_relations_3d[i] = 3
+                    elif (point[1] > point_top[1]):
+                        #under top
+                        point_relations_3d[i] = 2
+                    else:
+                        point_relations_3d[i] = -1
+
+                    #point points along graph
+                    rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                    screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
+                    pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
+                    rotated_pointb = self.rotate_3d(point_bottom[0], point_bottom[1], point_bottom[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                    screen_coordinatesb = (int(rotated_pointb[0]) + 400, int(rotated_pointb[1] + 400))
+                    pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesb, 5)
+
+                except Exception as e:
+                    # point outside domain
+                    #print(e)
+                    point_relations_3d[i] = -1
+
+            #print("pr3d: ", point_relations_3d)
 
 
     # Main game loop

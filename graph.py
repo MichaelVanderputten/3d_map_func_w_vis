@@ -9,7 +9,7 @@ graphs = []
 class GRAPH:
     def __init__(self):
         self.dims = 50
-        self.min_val = -600 # change later
+        self.min_val = -400 # change later
         self.max_val = abs(self.min_val)
 
         self.base_map_xy = np.zeros((self.dims, self.dims, 3))
@@ -152,6 +152,16 @@ class GRAPH:
                     for col in range(len(graph[row])):
                         point = graph[row][col]
                         point[0] += sinf(asec*10, bs*10, point[2], cs*10, ds*10)
+
+    def graph_sec(self, point, sectype, asec, bs, cs ,ds):
+        if sectype == "deg2":
+            return(point[1] + deg2(asec, bs, cs, point[2]))
+        if sectype == "deg3":
+            return(point[1] + deg3(asec, bs, cs, ds, point[2]))
+        if sectype == "lin":
+            return(point[1] + lin(asec*10, bs*10, point[2]))
+        if sectype == "sinf":
+            return(point[1] + sinf(asec*10, bs*10, point[2], cs*10, ds*10))
 
     def add_graph(self, axis):
         if axis == "yx":
