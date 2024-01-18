@@ -287,8 +287,12 @@ class APP:
                     new_y = math.pi*(-(math.sqrt((self.ap/graph.max_val) * (point[0]+offset) - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val)
                     point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
 
-                    point_bottom = (point[0], graph.graph_sec((point[0], math.pi*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val), point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), point[2], point[3])
-
+                    initial_y = math.pi*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val)
+                    point_bottom = (graph.graph_sec((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                    offset = point[0] - point_bottom[0]
+                    new_y = math.pi*(math.sqrt((self.ap/graph.max_val) * (point[0] + offset) - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val)
+                    point_bottom = (point[0], new_y, point[2], point[3])
+                    
                     if (point[1] > point_bottom[1]):
                         # under bottom
                         point_relations_3d[i] = 1
