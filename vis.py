@@ -35,9 +35,9 @@ class APP:
 
         self.viewer_position = (0, 0, -3*abs_z)
         
-        self.graphprim = ["lin", "deg2", "deg3", "sinf", "cosf", "tanf"]
+        self.graphprim = ["lin", "deg2", "deg3"]
         self.graphprim_index = 0
-        self.graphsec = ["lin", "deg2", "deg3", "sinf", "cosf", "tanf"]
+        self.graphsec = ["lin", "deg2", "deg3"]
         self.graphsec_index = 0
 
         self.xy_yx = "yx"
@@ -72,16 +72,6 @@ class APP:
         self.swap_from_3d = 0
         self.axis_color = False
 
-        # Initialize input boxes
-        boxes = [
-            {"label": "X:", "rect": pygame.Rect(50, 50, 200, 40), "value": ""},
-            {"label": "Y:", "rect": pygame.Rect(50, 120, 200, 40), "value": ""},
-            {"label": "Z:", "rect": pygame.Rect(50, 190, 200, 40), "value": ""},
-            {"label": "A:", "rect": pygame.Rect(50, 260, 200, 40), "value": ""}
-        ]
-        selected_box = None
-
-        mouse_active = True
 
     # Draw view button
     def draw_view_button(self):
@@ -92,7 +82,7 @@ class APP:
 
     # Print view index
     def draw_current_view_text(self):
-        text = self.font.render("Current View: " + self.views[self.current_view_index], True, self.white)
+        text = self.font.render("Prediction: " + str(point_relations_3d[len(point_relations_3d)-2]), True, self.white)
         self.screen.blit(text, (10, self.window_size[1] - 50))
 
     def calculate_distance(self, point1, point2):
@@ -207,10 +197,15 @@ class APP:
             # Apply the scale factor to the point size
             point_size = int(5 * scale_factor)
 
-            if self.axis_color:
-                c = create_heatmap(point, step_i, 3)
+            if i != len(points_3d)-2:
+                if self.axis_color:
+                    c = create_heatmap(point, step_i, 3)
+                else:
+                    c = create_heatmap(point, point_relations_3d[i], 4)
             else:
-                c = create_heatmap(point, point_relations_3d[i], 4)
+                c = self.white
+                point_size = int(10 * scale_factor)
+
 
             pygame.draw.circle(self.screen, c, screen_coordinates, point_size)
 
@@ -232,7 +227,7 @@ class APP:
             self.cpmod = 0.1
             self.dpmod = 10
 
-        elif self.primary == "sinf":
+        '''elif self.primary == "sinf":
             self.apmod = 0.1
             self.bpmod = 1
             self.cpmod = 1
@@ -248,7 +243,7 @@ class APP:
             self.apmod = 0.1
             self.bpmod = 1
             self.cpmod = 1
-            self.dpmod = 1
+            self.dpmod = 1''' # add later if time
 
         if self.secondary == "lin":
             self.asecmod = 1
@@ -265,7 +260,7 @@ class APP:
             self.csmod = 1
             self.dpmod = 10
 
-        elif self.secondary == "sinf":
+        '''elif self.secondary == "sinf":
             self.asecmod = 0.1
             self.bsmod = 1
             self.csmod = 1
@@ -281,7 +276,7 @@ class APP:
             self.asecmod = 0.1
             self.bsmod = 1
             self.csmod = 1
-            self.dsmod = 1
+            self.dsmod = 1''' # add later if time
 
     def populate_x(self):
         for i, point in enumerate(points_3d):
@@ -293,13 +288,13 @@ class APP:
             for i, point in enumerate(points_3d):
                 try:
                     initial_y = math.pi*(-(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val)
-                    point_top = (graph.graph_sec((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                    point_top = (graph.graph_sec_xy((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
                     offset = point[0] - point_top[0]
                     new_y = math.pi*(-(math.sqrt((self.ap/graph.max_val) * (point[0]+offset) - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) + 0.5 * (self.bp/graph.max_val))) / (self.ap/graph.max_val)
                     point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
 
                     initial_y = math.pi*(math.sqrt((self.ap/graph.max_val) * point[0] - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val)
-                    point_bottom = (graph.graph_sec((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                    point_bottom = (graph.graph_sec_xy((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
                     offset = point[0] - point_bottom[0]
                     new_y = math.pi*(math.sqrt((self.ap/graph.max_val) * (point[0] + offset) - (self.ap/graph.max_val) * (-self.cp) + 0.25 * ((self.bp/graph.max_val)**2)) - 0.5 * (self.bp/graph.max_val)) / (self.ap/graph.max_val)
                     point_bottom = (point[0], new_y, point[2], point[3])
@@ -317,12 +312,12 @@ class APP:
                         point_relations_3d[i] = -1
 
                     #point points along graph
-                    rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                    '''rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
                     screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
                     pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
                     rotated_pointb = self.rotate_3d(point_bottom[0], point_bottom[1], point_bottom[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
                     screen_coordinatesb = (int(rotated_pointb[0]) + 400, int(rotated_pointb[1] + 400))
-                    pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesb, 5)
+                    pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesb, 5)'''
 
                 except Exception as e:
                     # point outside domain
@@ -333,10 +328,10 @@ class APP:
             for i, point in enumerate(points_3d):
                 try:
                     if self.xy_yx == "xy":
-                        initial_y = graph.graph_prim((point[0], point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
-                        point_top = (graph.graph_sec((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                        initial_y = graph.graph_prim_xy((point[0], point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
+                        point_top = (graph.graph_sec_xy((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
                         offset = point[0] - point_top[0]
-                        new_y = int(graph.graph_prim((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
+                        new_y = int(graph.graph_prim_xy((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
                         point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
 
                         if (point[1] < point_top[1]):
@@ -346,15 +341,15 @@ class APP:
                             point_relations_3d[i] = 1
 
                         #point points along graph
-                        rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                        '''rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
                         screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
-                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
+                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)'''
 
                     else:
-                        initial_y = graph.graph_prim((point[1], point[0], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
-                        point_top = (graph.graph_sec((point[0], abs(point[1]), point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                        initial_y = graph.graph_prim_yx((point[1], point[0], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
+                        point_top = (graph.graph_sec_yx((point[0], abs(point[1]), point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
                         offset = point[0] - point_top[0]
-                        new_y = int(graph.graph_prim((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
+                        new_y = int(graph.graph_prim_yx((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
                         point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
 
                         if (point[1] < point_top[1]):
@@ -363,10 +358,10 @@ class APP:
                         else:
                             point_relations_3d[i] = 1
 
-                        #point points along graph
+                        '''point points along graph
                         rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
                         screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
-                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
+                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)'''
 
                 except Exception as e:
                     # point outside domain
@@ -385,16 +380,11 @@ class APP:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.mouse_active:
                         if event.button == 1:  # Left mouse button clicked
                             if(self.current_view_index != 0):
                                 self.swap_from_3d = self.current_view_index
                                 self.current_view_index = 0 # set 3d
                             self.rotate_active = True
-                        else:
-                            for box in self.boxes:
-                                if box["rect"].collidepoint(event.pos):
-                                    self.selected_box = box
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # Left mouse button released
                             self.rotate_active = False
@@ -518,6 +508,12 @@ class APP:
                 
                 elif event.type == pygame.KEYUP:
                     print("updating graph")
+                    if self.primary == "deg3" and self.xy_yx == "yx":
+                        self.graphprim_index = (self.graphprim_index + 1) % len(self.graphprim)
+                        self.primary = self.graphprim[self.graphprim_index]
+                    if self.secondary == "deg3" and self.xy_yx == "yx":
+                        self.graphsec_index = (self.graphsec_index + 1) % len(self.graphsec)
+                        self.secondary = self.graphsec[self.graphsec_index]
                     self.adjust_mods()
                     print(self.primary,",",self.secondary,",",self.prim_sec)
                     print(self.ap,",",self.bp,",",self.cp,",",self.dp)

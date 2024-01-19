@@ -67,7 +67,7 @@ class GRAPH:
                         point = graph[row][col]
                         point[1] += lin(asec*10, bs*10, point[2])
 
-            if primtype == "sinf":
+            '''if primtype == "sinf":
                 for row in range(len(graph)):
                     for col in range(len(graph[row])):
                         point = graph[row][col]
@@ -101,7 +101,7 @@ class GRAPH:
                 for row in range(len(graph)):
                     for col in range(len(graph[row])):
                         point = graph[row][col]
-                        point[1] += tanf(asec*100, bs*100, point[2], cs*10, ds*10)
+                        point[1] += tanf(asec*100, bs*100, point[2], cs*10, ds*10)''' # add later if time
 
 
         elif axis == "yx":
@@ -141,7 +141,7 @@ class GRAPH:
                         point = graph[row][col]
                         point[0] += lin(asec*10, bs*10, point[2])
 
-            if primtype == "sinf":
+            '''if primtype == "sinf":
                 for row in range(len(graph)):
                     for col in range(len(graph[row])):
                         point = graph[row][col]
@@ -175,35 +175,47 @@ class GRAPH:
                 for row in range(len(graph)):
                     for col in range(len(graph[row])):
                         point = graph[row][col]
-                        point[0] += tanf(asec*100, bs*100, point[1], cs*10, ds*10)
+                        point[0] += tanf(asec*100, bs*100, point[1], cs*10, ds*10)''' # add later if time
 
-    def graph_sec(self, point, sectype, asec, bs, cs ,ds):
+    def graph_sec_xy(self, point, sectype, asec, bs, cs ,ds):
         if sectype == "deg2":
             return(point[0] + deg2(asec, bs, cs, point[2]))
         if sectype == "deg3":
             return(point[0] + deg3(asec, bs, cs, ds, point[2]))
         if sectype == "lin":
             return(point[0] + lin(asec*10, bs*10, point[2]))
-        if sectype == "sinf":
+        '''if sectype == "sinf":
             return(point[0] + sinf(asec*10, bs*10, point[2], cs*10, ds*10))
         if sectype == "cosf":
             return(point[0] + cosf(asec*100, bs*100, point[2], cs*10, ds*10))
         if sectype == "tanf":
-            return(point[0] + tanf(asec*100, bs*100, point[1], cs*10, ds*10))
+            return(point[0] + tanf(asec*100, bs*100, point[1], cs*10, ds*10))''' # add later if time
         
-    def graph_prim(self, point, primtype, ap, bp, cp ,dp):
+    def graph_prim_xy(self, point, primtype, ap, bp, cp ,dp):
         if primtype == "lin":
             return lin(ap*10, bp*10, point[0])
         if primtype == "deg2":
             return deg2(ap, bp, cp, point[0])/(10)
         if primtype == "deg3":
             return  deg3(ap, bp, cp, dp, point[0])/(1000)
-        if primtype == "sinf":
+        '''if primtype == "sinf":
             return sinf(ap*10, bp*10, point[0], cp*10, dp*10)
         if primtype == "cosf":
             return cosf(ap*100, bp*100, point[0], cp*10, dp*10)
         if primtype == "tanf":
-            return tanf(ap*100, bp*100, point[0], cp*10, dp*10)
+            return tanf(ap*100, bp*100, point[0], cp*10, dp*10)''' # add later if time
+        
+    def graph_sec_yx(self, point, sectype, asec, bs, cs ,ds):
+        if sectype == "deg2":
+            return(point[0] + deg2(asec, bs, cs, point[2]))
+        if sectype == "deg3":
+            return(point[0] + deg3(asec, bs, cs, ds, point[2]))
+        if sectype == "lin":
+            return(point[0] + lin(asec*10, bs*10, point[2]))
+        
+    def graph_prim_yx(self, point, primtype, ap, bp, cp ,dp):
+        return (point[0] - (bp*10))/(ap*10)
+        # deg 2 hadled on its own. deg 3 not allowed
 
     def add_graph(self, axis):
         if axis == "yx":
@@ -220,7 +232,7 @@ def deg3(a,b,c,d,x):
 def lin(m, b, x):
     return m*x + b
 
-def sinf(a,b,x,c,d):
+'''def sinf(a,b,x,c,d):
     return (a*math.sin(b*(x*math.pi-c)))*100 + d
 
 def cosf(a,b,x,c,d):
@@ -236,4 +248,4 @@ def acosf(a,b,x,c,d):
     return (a*math.acos(b*(x*math.pi-c)))*100 + d
 
 def atanf(a,b,x,c,d):
-    return (a*math.atan(b*(x*math.pi-c)))*100 + d
+    return (a*math.atan(b*(x*math.pi-c)))*100 + d''' # add later if time
