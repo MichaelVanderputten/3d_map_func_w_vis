@@ -33,7 +33,7 @@ class APP:
         self.rotate_active = False
         self.rotation_start_time = 0
 
-        self.viewer_position = (0, 0, -3*abs_z)
+        self.viewer_position = (0, 0, -5*abs_z)
         
         self.graphprim = ["lin", "deg2", "deg3"]
         self.graphprim_index = 0

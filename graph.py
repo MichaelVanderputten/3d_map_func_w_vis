@@ -9,7 +9,7 @@ graphs = []
 class GRAPH:
     def __init__(self):
         self.dims = 50
-        self.min_val = -400 # change later
+        self.min_val = -1000 # change later
         self.max_val = abs(self.min_val)
 
         self.base_map_xy = np.zeros((self.dims, self.dims, 3))

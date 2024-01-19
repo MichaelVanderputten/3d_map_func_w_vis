@@ -10,7 +10,7 @@ import numpy as np
 
 
 predicted_point = [
-    ( 500, 500, 500, 1) # x, y, z coordinates. Do not leave blank.
+    ( 50, 50, 50, 0) # x, y, z coordinates. Do not leave blank. Do not remove trailing '0'
 ] # add predicted point here. x y and z must be ints
 
 
