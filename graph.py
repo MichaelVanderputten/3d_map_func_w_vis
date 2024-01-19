@@ -153,6 +153,30 @@ class GRAPH:
                         point = graph[row][col]
                         point[0] += sinf(asec*10, bs*10, point[2], cs*10, ds*10)
 
+            if primtype == "cosf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[0] = cosf(ap*100, bp*100, point[1], cp*10, dp*10)
+
+            if sectype == "cosf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[0] += cosf(asec*100, bs*100, point[2], cs*10, ds*10)
+
+            if primtype == "tanf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[0] = tanf(ap*100, bp*100, point[1], cp*10, dp*10)
+
+            if sectype == "tanf":
+                for row in range(len(graph)):
+                    for col in range(len(graph[row])):
+                        point = graph[row][col]
+                        point[0] += tanf(asec*100, bs*100, point[1], cs*10, ds*10)
+
     def graph_sec(self, point, sectype, asec, bs, cs ,ds):
         if sectype == "deg2":
             return(point[0] + deg2(asec, bs, cs, point[2]))
@@ -162,6 +186,24 @@ class GRAPH:
             return(point[0] + lin(asec*10, bs*10, point[2]))
         if sectype == "sinf":
             return(point[0] + sinf(asec*10, bs*10, point[2], cs*10, ds*10))
+        if sectype == "cosf":
+            return(point[0] + cosf(asec*100, bs*100, point[2], cs*10, ds*10))
+        if sectype == "tanf":
+            return(point[0] + tanf(asec*100, bs*100, point[1], cs*10, ds*10))
+        
+    def graph_prim(self, point, primtype, ap, bp, cp ,dp):
+        if primtype == "lin":
+            return lin(ap*10, bp*10, point[0])
+        if primtype == "deg2":
+            return deg2(ap, bp, cp, point[0])/(10)
+        if primtype == "deg3":
+            return  deg3(ap, bp, cp, dp, point[0])/(1000)
+        if primtype == "sinf":
+            return sinf(ap*10, bp*10, point[0], cp*10, dp*10)
+        if primtype == "cosf":
+            return cosf(ap*100, bp*100, point[0], cp*10, dp*10)
+        if primtype == "tanf":
+            return tanf(ap*100, bp*100, point[0], cp*10, dp*10)
 
     def add_graph(self, axis):
         if axis == "yx":

@@ -19,3 +19,4 @@ s - select secondary function
 g - cycle between graphs
 up arrow - cycle between primary function options
 down arrow - cycle between secondary function options
+q/w/e - select input feilds x y and z respectivly

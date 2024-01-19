@@ -72,6 +72,17 @@ class APP:
         self.swap_from_3d = 0
         self.axis_color = False
 
+        # Initialize input boxes
+        boxes = [
+            {"label": "X:", "rect": pygame.Rect(50, 50, 200, 40), "value": ""},
+            {"label": "Y:", "rect": pygame.Rect(50, 120, 200, 40), "value": ""},
+            {"label": "Z:", "rect": pygame.Rect(50, 190, 200, 40), "value": ""},
+            {"label": "A:", "rect": pygame.Rect(50, 260, 200, 40), "value": ""}
+        ]
+        selected_box = None
+
+        mouse_active = True
+
     # Draw view button
     def draw_view_button(self):
         button_text = self.font.render("View: " + self.views[self.current_view_index], True, self.white)
@@ -318,6 +329,50 @@ class APP:
                     #print(e)
                     point_relations_3d[i] = -1
 
+        else:
+            for i, point in enumerate(points_3d):
+                try:
+                    if self.xy_yx == "xy":
+                        initial_y = graph.graph_prim((point[0], point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
+                        point_top = (graph.graph_sec((point[0], point[1], point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                        offset = point[0] - point_top[0]
+                        new_y = int(graph.graph_prim((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
+                        point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
+
+                        if (point[1] < point_top[1]):
+                            # above top
+                            point_relations_3d[i] = 3
+                        else:
+                            point_relations_3d[i] = 1
+
+                        #point points along graph
+                        rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                        screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
+                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
+
+                    else:
+                        initial_y = graph.graph_prim((point[1], point[0], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp)
+                        point_top = (graph.graph_sec((point[0], abs(point[1]), point[2]), self.secondary, self.asec/graph.max_val, self.bs/graph.max_val, -self.cs, self.ds), initial_y, point[2], point[3])
+                        offset = point[0] - point_top[0]
+                        new_y = int(graph.graph_prim((point[0]-(9)*offset, point[1], point[2]), self.primary, self.ap/graph.max_val, self.bp/graph.max_val, -self.cp, self.dp))
+                        point_top = (point[0], new_y, point[2], point[3]) # offset x value to calulate y correctly
+
+                        if (point[1] < point_top[1]):
+                            # above top
+                            point_relations_3d[i] = 3
+                        else:
+                            point_relations_3d[i] = 1
+
+                        #point points along graph
+                        rotated_pointa = self.rotate_3d(point_top[0], point_top[1], point_top[2], -1, (0,0,0), (self.rotation_angle_x, self.rotation_angle_y, 0))
+                        screen_coordinatesa = (int(rotated_pointa[0]) + 400, int(rotated_pointa[1] + 400))
+                        pygame.draw.circle(self.screen, (255,255,255), screen_coordinatesa, 5)
+
+                except Exception as e:
+                    # point outside domain
+                    print(e)
+                    point_relations_3d[i] = -1
+
             #print("pr3d: ", point_relations_3d)
 
 
@@ -330,11 +385,16 @@ class APP:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left mouse button clicked
-                        if(self.current_view_index != 0):
-                            self.swap_from_3d = self.current_view_index
-                            self.current_view_index = 0 # set 3d
-                        self.rotate_active = True
+                    if self.mouse_active:
+                        if event.button == 1:  # Left mouse button clicked
+                            if(self.current_view_index != 0):
+                                self.swap_from_3d = self.current_view_index
+                                self.current_view_index = 0 # set 3d
+                            self.rotate_active = True
+                        else:
+                            for box in self.boxes:
+                                if box["rect"].collidepoint(event.pos):
+                                    self.selected_box = box
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # Left mouse button released
                             self.rotate_active = False
@@ -515,6 +575,7 @@ class APP:
                     self.rotation_angle_y = 0
 
 
+
             # Draw the appropriate axes and points based on the current view
             if self.views[self.current_view_index] == "3D":
                 # Draw 3D points
@@ -529,6 +590,10 @@ class APP:
                 y_label = self.font.render("X-axis", True, self.white)
                 self.screen.blit(z_label, (self.window_size[0]//2, self.window_size[1]//10))
                 self.screen.blit(y_label, (self.window_size[0]//10, self.window_size[1]//2))
+
+                self.rotation_angle_x = 0
+                self.rotation_angle_y = 0
+                self.draw_3d_graph()
 
                 #draw points using z and y
                 if(self.axis_color):
@@ -550,6 +615,10 @@ class APP:
                 self.screen.blit(z_label, (self.window_size[0]//2, self.window_size[1]//10))
                 self.screen.blit(y_label, (self.window_size[0]//10, self.window_size[1]//2))
 
+                self.rotation_angle_x = 0
+                self.rotation_angle_y = 1.575
+                self.draw_3d_graph()
+
                 #draw points using z and y
                 if(self.axis_color):
                     for point in ori_points_3d:
@@ -568,6 +637,10 @@ class APP:
                 y_label = self.font.render("X-axis", True, self.white)
                 self.screen.blit(z_label, (self.window_size[0]//2, self.window_size[1]//10))
                 self.screen.blit(y_label, (self.window_size[0]//10, self.window_size[1]//2))
+
+                self.rotation_angle_x = -1.575
+                self.rotation_angle_y = 0
+                self.draw_3d_graph()
 
                 #draw points using z and y
                 if(self.axis_color):
